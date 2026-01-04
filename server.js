@@ -30,10 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/courses', courseRoutes);
 app.use('/api/customers', customerRoutes);
 
-// Thêm đoạn này vào để chỉ định rõ: Vào trang chủ là mở file index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 const createDefaultAdmin = async () => {
     try {
