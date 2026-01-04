@@ -1,0 +1,23 @@
+const mongoose = require('mongoose');
+
+const courseSchema = new mongoose.Schema({
+    name: { 
+        type: String, 
+        required: [true, 'Vui lòng nhập tên khóa học'],
+        minlength: [5, 'Tên khóa học phải dài hơn 5 ký tự']
+    },
+    price: { 
+        type: Number, 
+        required: [true, 'Vui lòng nhập giá tiền'] 
+    },
+    description: {
+        type: String,
+        default: 'Chưa có mô tả'
+    },
+    createdAt: { 
+        type: Date, 
+        default: Date.now 
+    }
+});
+
+module.exports = mongoose.model('Course', courseSchema);
