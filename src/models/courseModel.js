@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const courseSchema = new mongoose.Schema({
     name: { 
         type: String, 
-        required: [true, 'Vui lòng nhập tên khóa học'],
-        minlength: [5, 'Tên khóa học phải dài hơn 5 ký tự']
+        required: [true, 'Vui lòng nhập tên Tên đồ ăn/uống'],
+        minlength: [5, 'Tên đồ ăn/uống phải dài hơn 5 ký tự']
     },
     price: { 
         type: Number, 

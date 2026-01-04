@@ -15,7 +15,7 @@ exports.getCourseById = async (req, res) => {
     try {
         const course = await Course.findById(req.params.id);
         if (!course) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy khóa học' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy đồ ăn/uống' });
         }
         res.status(200).json({ success: true, data: course });
     } catch (error) {
