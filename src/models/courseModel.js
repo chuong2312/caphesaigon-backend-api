@@ -14,6 +14,11 @@ const courseSchema = new mongoose.Schema({
         type: String,
         default: 'Chưa có mô tả'
     },
+    image: {
+        type: String,
+        default: 'https://via.placeholder.com/300?text=Mon+An',
+        required: false
+    },
     createdAt: { 
         type: Date, 
         default: Date.now 
