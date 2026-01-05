@@ -22,11 +22,12 @@ app.use(express.json()); // Cho phép đọc JSON từ body request
 // Cập nhật cấu hình CORS để cho phép Frontend trên Cloudflare và Local gọi API
 app.use(cors({
     origin: [
-        'https://caphesaigon.pages.dev', // Domain chính thức trên Cloudflare
-        'http://localhost:5500',         // Để test local
-        'http://127.0.0.1:5500'          // Dự phòng cho local
+        'https://caphesaigon.pages.dev', // Domain chính thức
+        'http://localhost:5500',         // Localhost
+        'http://127.0.0.1:5500',
+        /^https:\/\/.*\.caphesaigon\.pages\.dev$/ // <--- DÒNG QUAN TRỌNG: Chấp nhận mọi link Preview
     ],
-    credentials: true // Quan trọng để gửi cookie/session
+    credentials: true // Cho phép gửi Cookie
 })); // Cho phép gọi API từ tên miền khác (Cross-Origin)
 app.use(cookieParser()); // Cho phép đọc Cookie
 
