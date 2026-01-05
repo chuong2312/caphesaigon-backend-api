@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiệm Cà Phê - Thực Đơn</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>☕ Tiệm Cà Phê An Yên</h1>
+            <nav>
+                <a href="index.html">Thực Đơn</a>
+                <!-- Link tới trang admin. Trong thực tế nên ẩn hoặc yêu cầu login -->
+                <a href="infor.html" style="margin-left: 20px;">Quản Lý (Admin)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Chào Mừng Bạn Đến Với Tiệm Cà Phê Của Chúng Tôi</h2>
+            <p>Hương vị đậm đà, không gian yên tĩnh.</p>
+        </section>
+
+        <section id="menu-section">
+            <h3>Thực Đơn Hôm Nay</h3>
+            <!-- Grid chứa danh sách món ăn, sẽ được fill bởi JS -->
+            <div id="menuGrid" class="grid-container">
+                <!-- Data will be loaded here -->
+                <p>Đang tải thực đơn...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Tiệm Cà Phê. All rights reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,48 +1,51 @@
 const express = require('express');
-const router = express.Router(); // Tạo đối tượng router của Express
-const courseController = require('../controllers/courseController'); // Import controller xử lý logic
+const router = express.Router();
+const courseController = require('../controllers/courseController');
 
-// --- IMPORT MIDDLEWARE ---
-const { protect, admin } = require('../middleware/authMiddleware'); // Middleware xác thực (Token) và phân quyền (Admin)
-const logRequest = require('../middleware/logMiddleware'); // Middleware ghi log request
-const validateCourseData = require('../middleware/validationMiddleware'); // Middleware validate dữ liệu đầu vào
-const upload = require('../middleware/uploadMiddleware'); // Middleware xử lý upload file (Multer)
+// --- IMPORT CÁC MIDDLEWARE ---
+// protect: Yêu cầu đăng nhập (kiểm tra Token)
+// admin: Yêu cầu quyền admin
+const { protect, admin } = require('../middleware/authMiddleware');
 
-// --- ĐỊNH NGHĨA CÁC ROUTE (ĐƯỜNG DẪN) ---
+const logRequest = require('../middleware/logMiddleware'); // Ghi log
+const validateCourseData = require('../middleware/validationMiddleware'); // Kiểm tra dữ liệu đầu vào
+const upload = require('../middleware/uploadMiddleware'); // Xử lý file ảnh
 
-// 1. Lấy danh sách tất cả món ăn (Public - Ai cũng xem được)
-// GET /api/courses
+// ============================================
+// ĐỊNH NGHĨA CÁC ĐƯỜNG DẪN (ROUTES) API
+// ============================================
+
+// --- 1. LẤY DANH SÁCH MÓN ĂN (GET /) ---
+// Quyền: Public (Ai cũng xem được)
 router.get('/', courseController.getAllCourses);
 
-// 2. Lấy chi tiết 1 món ăn theo ID (Public)
-// GET /api/courses/:id
+// --- 2. LẤY CHI TIẾT 1 MÓN (GET /:id) ---
+// Quyền: Public
 router.get('/:id', courseController.getCourseById);
 
-// 3. Thêm món ăn mới (Protected - Cần đăng nhập)
-// POST /api/courses
-// Quy trình xử lý (Middleware Chain):
-// logRequest -> protect -> upload.single -> validateCourseData -> controller
+// --- 3. THÊM MÓN ĂN MỚI (POST /) ---
+// Quyền: Admin (Phải đăng nhập + là Admin)
+// Luồng xử lý: Log -> Check Login & Admin -> Upload Ảnh -> Validate -> Controller tạo món
 router.post(
     '/',
-    logRequest,           // 1. Ghi log request
-    protect,              // 2. Kiểm tra đăng nhập (JWT)
-    upload.single('image'), // 3. Xử lý upload ảnh (field name: 'image')
-    validateCourseData,   // 4. Validate dữ liệu body (tên, giá...)
-    courseController.createCourse // 5. Logic lưu vào DB
+    logRequest,              // Ghi log
+    protect, admin,          // Bảo vệ: Chỉ Admin mới được thêm
+    upload.single('image'),  // Upload 1 file ảnh (theo key 'image')
+    validateCourseData,      // Kiểm tra tên, giá...
+    courseController.createCourse
 );
 
-// 4. Cập nhật món ăn (Protected + Admin - Chỉ Admin mới được sửa)
-// PUT /api/courses/:id
+// --- 4. CẬP NHẬT MÓN ĂN (PUT /:id) ---
+// Quyền: Admin
 router.put(
     '/:id', 
-    protect, 
-    admin,                // Cần quyền Admin
-    upload.single('image'), // Cho phép update ảnh mới
-    courseController.updateCourse // Logic update DB
+    protect, admin, 
+    upload.single('image'),  // Cho phép update ảnh mới nếu muốn
+    courseController.updateCourse
 );
 
-// 5. Xóa món ăn (Protected + Admin)
-// DELETE /api/courses/:id
+// --- 5. XÓA MÓN ĂN (DELETE /:id) ---
+// Quyền: Admin
 router.delete('/:id', protect, admin, courseController.deleteCourse);
 
 module.exports = router;

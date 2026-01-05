@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Thực Đơn - Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* CSS riêng cho trang Admin đơn giản */
+        .admin-layout {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-section {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-section {
+            flex: 2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3e2723;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #FFA000;
+            margin-right: 5px;
+        }
+
+        .btn-delete {
+            background-color: #D32F2F;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <h1>⚙️ Quản Lý (Admin)</h1>
+            <nav>
+                <a href="index.html">Về Trang Chủ</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Thông báo Đăng nhập giả lập -->
+        <div id="loginWarning"
+            style="background:#fff3cd; color:#856404; padding:10px; margin-bottom:20px; display:none;">
+            ⚠️ Lưu ý: Bạn cần đăng nhập Admin để thực hiện các thao tác này. (Hiện tại Demo có thể bỏ qua bước login nếu
+            backend chưa bật Auth chặt chẽ).
+        </div>
+
+        <div class="admin-layout">
+            <!-- Form Thêm / Sửa -->
+            <div class="form-section">
+                <h3 id="formTitle">Thêm Món Mới</h3>
+                <form id="courseForm">
+                    <input type="hidden" id="courseId"> <!-- Dùng để lưu ID khi sửa -->
+
+                    <div class="form-group">
+                        <label>Tên món:</label>
+                        <input type="text" id="name" required placeholder="Nhập tên món">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Giá tiền:</label>
+                        <input type="number" id="price" required placeholder="Nhập giá">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả:</label>
+                        <textarea id="description" rows="3" placeholder="Mô tả món ăn"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hình ảnh:</label>
+                        <input type="file" id="imageFile">
+                        <!-- Preview ảnh khi sửa (nếu cần) -->
+                    </div>
+
+                    <button type="submit" class="btn" id="btnSubmit">Lưu Món</button>
+                    <button type="button" class="btn" style="background:#777; margin-top:10px;"
+                        onclick="resetForm()">Hủy / Reset</button>
+                </form>
+            </div>
+
+            <!-- Danh sách món -->
+            <div class="list-section">
+                <h3>Danh Sách Món Ăn</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tên</th>
+                            <th>Giá</th>
+                            <th>Mô tả</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody">
+                        <!-- Data loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/infor.js"></script>
+</body>
+
+</html>

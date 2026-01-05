@@ -1,94 +1,106 @@
 const Course = require('../models/courseModel');
 
-// --- 1. LẤY TẤT CẢ KHÓA HỌC (GET /) ---
+// --- 1. LẤY TẤT CẢ KHÓA HỌC/MÓN ĂN (GET /) ---
 exports.getAllCourses = async (req, res) => {
     try {
-        // Tìm tất cả bản ghi trong Collection 'Courses'
-        const courses = await Course.find(); 
-        // Trả về response JSON: success=true, số lượng, và data
-        res.status(200).json({ success: true, count: courses.length, data: courses });
+        // Tìm toàn bộ dữ liệu trong Database
+        const courses = await Course.find();
+        
+        // Trả về kết quả thành công
+        res.status(200).json({
+            success: true,
+            count: courses.length,
+            data: courses
+        });
     } catch (error) {
-        // Báo lỗi Server 500 nếu có exception
-        res.status(500).json({ success: false, message: error.message });
+        // Xử lý lỗi hệ thống
+        console.error("Lỗi lấy danh sách món:", error.message);
+        res.status(500).json({ success: false, message: "Lỗi Server: " + error.message });
     }
 };
 
-// --- 2. LẤY 1 KHÓA HỌC THEO ID (GET /:id) ---
+// --- 2. LẤY CHI TIẾT 1 MÓN ĂN THEO ID (GET /:id) ---
 exports.getCourseById = async (req, res) => {
     try {
-        // Tìm theo ID được truyền trên URL (req.params.id)
         const course = await Course.findById(req.params.id);
-        
-        // Nếu không tìm thấy (null) -> Báo lỗi 404 Not Found
+
         if (!course) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy đồ ăn/uống' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy món ăn này' });
         }
-        
-        // Tìm thấy -> Trả về data
+
         res.status(200).json({ success: true, data: course });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Lỗi lấy món theo ID:", error.message);
+        res.status(500).json({ success: false, message: "Lỗi Server" });
     }
 };
 
-// --- 3. TẠO KHÓA HỌC MỚI (POST /) ---
+// --- 3. TẠO MÓN ĂN MỚI (POST /) ---
 exports.createCourse = async (req, res) => {
     try {
-        // Kiểm tra nếu có file ảnh được upload (từ middleware multer)
+        // Xử lý đường dẫn ảnh nếu có upload
         if (req.file) {
-            // Gán đường dẫn ảnh vào field 'image' trong body
-            // Đường dẫn này sẽ được lưu vào DB
             req.body.image = '/uploads/' + req.file.filename;
         }
 
-        // Tạo bản ghi mới trong DB với data từ req.body
-        const newCourse = await Course.create(req.body); 
-        
-        // Trả về 201 Created và data vừa tạo
-        res.status(201).json({ success: true, data: newCourse });
+        // Tạo bản ghi mới
+        const newCourse = await Course.create(req.body);
+
+        res.status(201).json({
+            success: true,
+            message: "Thêm món thành công!",
+            data: newCourse
+        });
     } catch (error) {
-        // Lỗi 400 Bad Request (thường do validate sai)
-        res.status(400).json({ success: false, message: error.message });
+        console.error("Lỗi tạo món:", error.message);
+        res.status(400).json({ success: false, message: "Lỗi dữ liệu: " + error.message });
     }
 };
 
-// --- 4. CẬP NHẬT KHÓA HỌC (PUT /:id) ---
+// --- 4. CẬP NHẬT MÓN ĂN (PUT /:id) ---
 exports.updateCourse = async (req, res) => {
     try {
-        // Kiểm tra nếu có upload ảnh mới -> Cập nhật đường dẫn ảnh
+        // Nếu có upload ảnh mới thì cập nhật lại path ảnh
         if (req.file) {
             req.body.image = '/uploads/' + req.file.filename;
         }
 
-        // Tìm theo ID và cập nhật nội dung
+        // Tìm và cập nhật
         const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-            new: true, // true: Trả về dữ liệu SAU khi sửa (mặc định là trước khi sửa)
-            runValidators: true // true: Chạy lại validate (ví dụ check độ dài tên, bắt buộc nhập...)
+            new: true, // Trả về data mới sau khi update
+            runValidators: true // Kiểm tra lại tính hợp lệ của dữ liệu
         });
 
-        // Nếu ID không tồn tại
         if (!course) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy để sửa' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy món để sửa' });
         }
-        
-        res.status(200).json({ success: true, data: course });
+
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật thành công!",
+            data: course
+        });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        console.error("Lỗi cập nhật:", error.message);
+        res.status(400).json({ success: false, message: "Lỗi cập nhật: " + error.message });
     }
 };
 
-// --- 5. XÓA KHÓA HỌC (DELETE /:id) ---
+// --- 5. XÓA MÓN ĂN (DELETE /:id) ---
 exports.deleteCourse = async (req, res) => {
     try {
-        // Tìm và xóa theo ID
         const course = await Course.findByIdAndDelete(req.params.id);
-        
+
         if (!course) {
-            return res.status(404).json({ success: false, message: 'Không tìm thấy để xóa' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy món để xóa' });
         }
-        
-        res.status(200).json({ success: true, message: 'Đã xóa thành công' });
+
+        res.status(200).json({
+            success: true,
+            message: 'Đã xóa món ăn thành công'
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error("Lỗi xóa món:", error.message);
+        res.status(500).json({ success: false, message: "Lỗi Server" });
     }
 };
