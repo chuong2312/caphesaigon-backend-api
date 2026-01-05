@@ -1,11 +1,22 @@
+const API_BASE_URL = "https://caphesaigon-backend-api.onrender.com";
+const API_URL = `${API_BASE_URL}/api/courses`;
+
 document.addEventListener('DOMContentLoaded', () => {
+    checkLogin();
     loadCoursesAdmin();
 
     // Xử lý sự kiện Submit Form
     document.getElementById('courseForm').addEventListener('submit', handleFormSubmit);
 });
 
-const API_URL = '/api/courses';
+// 0. Kiểm tra đăng nhập
+function checkLogin() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Bạn chưa đăng nhập! Vui lòng đăng nhập để truy cập trang này.');
+        window.location.href = 'index.html'; // Chuyển về trang chủ để đăng nhập
+    }
+}
 
 // 1. Tải danh sách món ăn
 async function loadCoursesAdmin() {
@@ -51,6 +62,7 @@ async function handleFormSubmit(e) {
     const price = document.getElementById('price').value;
     const description = document.getElementById('description').value;
     const imageFile = document.getElementById('imageFile').files[0];
+    const token = localStorage.getItem('token');
 
     // Sử dụng FormData để gửi cả file ảnh
     const formData = new FormData();
@@ -63,19 +75,26 @@ async function handleFormSubmit(e) {
 
     try {
         let res;
+        const options = {
+            headers: {
+                'Authorization': `Bearer ${token}` // Gửi token lên
+            },
+            credentials: 'include'
+        };
+
         if (id) {
-            // ĐANG Ở CHẾ ĐỘ SỬA (PUT) - Cần Token Admin thực tế
-            // Tạm thời giả định backend đang bypass hoặc đã có cookie
+            // PUT
             res = await fetch(`${API_URL}/${id}`, {
                 method: 'PUT',
-                body: formData
-                // headers: { 'Authorization': 'Bearer <TOKEN>' } // Cần thêm token nếu có auth
+                body: formData,
+                ...options
             });
         } else {
-            // ĐANG Ở CHẾ ĐỘ THÊM (POST)
+            // POST
             res = await fetch(API_URL, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                ...options
             });
         }
 
@@ -124,9 +143,14 @@ async function startEdit(id) {
 async function deleteCourse(id) {
     if (!confirm('Bạn có chắc chắn muốn xóa món này không?')) return;
 
+    const token = localStorage.getItem('token');
     try {
         const res = await fetch(`${API_URL}/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            credentials: 'include'
         });
         const result = await res.json();
 

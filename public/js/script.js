@@ -1,6 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Định nghĩa lại API Base URL (nếu chưa có ở đầu file)
+    if (typeof API_BASE_URL === 'undefined') {
+        var API_BASE_URL = "https://caphesaigon-backend-api.onrender.com";
+    }
+
     // Gọi hàm loadMenuPublic khi trang web tải xong
-    loadMenuPublic();
+    if (typeof loadMenuPublic === 'function') {
+        loadMenuPublic();
+    }
+
+    // 2. Xử lý Login Form
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                // [SỬA QUAN TRỌNG]: Dùng API_BASE_URL để gọi sang Render
+                const res = await fetch(`${API_BASE_URL}/api/customers/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // Quan trọng để nhận Cookie
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('Đăng nhập thành công! 👋');
+                    
+                    // [SỬA QUAN TRỌNG]: Phải lưu Token riêng để infor.js dùng
+                    localStorage.setItem('token', data.token); 
+                    localStorage.setItem('user', JSON.stringify(data.data));
+                    
+                    // Reload lại trang để cập nhật giao diện
+                    window.location.reload();
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Đăng nhập thất bại'));
+                }
+            } catch (error) {
+                console.error('Lỗi login:', error);
+                alert('Không thể kết nối đến server Backend!');
+            }
+        });
+    }
 });
 
 // Hàm lấy dữ liệu món ăn từ Server và hiển thị
