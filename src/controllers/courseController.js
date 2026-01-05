@@ -26,6 +26,9 @@ exports.getCourseById = async (req, res) => {
 // Tạo khóa học mới
 exports.createCourse = async (req, res) => {
     try {
+        if (req.file) {
+            req.body.image = '/uploads/' + req.file.filename;
+        }
         const newCourse = await Course.create(req.body); // Lưu thẳng vào MongoDB
         res.status(201).json({ success: true, data: newCourse });
     } catch (error) {
@@ -36,6 +39,9 @@ exports.createCourse = async (req, res) => {
 // Cập nhật khóa học
 exports.updateCourse = async (req, res) => {
     try {
+        if (req.file) {
+            req.body.image = '/uploads/' + req.file.filename;
+        }
         const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
             new: true, // Trả về dữ liệu mới sau khi sửa
             runValidators: true // Chạy lại validate (check độ dài tên, v.v.)
